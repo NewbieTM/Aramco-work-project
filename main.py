@@ -103,11 +103,11 @@ if uploaded_file is not None:
             # Button
             if st.button("Apply Transformations and Train the Model"):
                 train_ts, test_ts = ts.train_test_split(test_size=HORIZON)
-                model = CatBoostPerSegmentModel()
+                model = CatBoostPerSegmentModel(logging_level = 'Silent')
                 pipeline = Pipeline(model=model, transforms=selected_transforms, horizon=HORIZON)
                 model_training_mode = st.subheader('Model is training. Please wait and do not press any other buttons.')
                 pipeline.fit(train_ts)
-                forecast_ts = pipeline.forecast()
+                forecast_ts = pipeline.forecast(test_ts)
                 metric = SMAPE(mode="macro")
                 metric_value = metric(y_true=test_ts, y_pred=forecast_ts)
                 model_training_mode.subheader('The model is successfully trained')
@@ -121,5 +121,4 @@ if uploaded_file is not None:
         else:
             data_load_state.empty()
             st.write(ts.head(1))
-
 
